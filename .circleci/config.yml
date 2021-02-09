@@ -48,7 +48,7 @@ jobs:
           command: |
             cd frontend
             npm i
-            npm run lint
+            npm run lint -- --fix
             npm run test
 
   test_backend:
@@ -62,7 +62,7 @@ jobs:
           command: |
             cd backend
             npm i
-            npm run lint
+            npm run lint -- --fix
             npm run test
 
 
