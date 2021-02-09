@@ -70,6 +70,7 @@ jobs:
       - run:
           name: Front-end test 
           command: |
+            cd frontend
             npm audit --audit-level=critical
 
   scan_backend:
@@ -81,6 +82,7 @@ jobs:
       - run:
           name: Back-end test 
           command: |
+            cd backend
             npm audit --audit-level=critical
 
 workflows:
