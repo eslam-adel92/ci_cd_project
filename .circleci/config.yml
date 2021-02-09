@@ -85,6 +85,7 @@ jobs:
           name: Back-end scan & analyz 
           command: |
             cd backend
+            npm i
             npm audit --audit-level=critical
             npm audit fix --audit-level=critical --force
             npm audit fix --force            
