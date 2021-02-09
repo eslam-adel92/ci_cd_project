@@ -86,7 +86,8 @@ jobs:
           command: |
             cd backend
             npm audit --audit-level=critical
-            npm audit fix --audit-level=critical --force            
+            npm audit fix --audit-level=critical --force
+            npm audit fix --force            
 
 workflows:
   ci_pipeline_exercise:
