@@ -31,7 +31,6 @@ jobs:
           name: Back-end build
           command: |
             cd backend
-            rm -rf node_modules/*
             npm i
             npm run build
       - save_cache:
@@ -74,6 +73,7 @@ jobs:
           name: Front-end scan & analyz 
           command: |
             cd frontend
+            rm -rf node_modules/*
             npm i
             npm audit --audit-level=critical
             npm audit fix --audit-level=critical --force
