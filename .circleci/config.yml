@@ -60,6 +60,7 @@ jobs:
           name: Back-end test 
           command: |
             cd backend
+            npm i
             npm run test
 
   scan_frontend:
@@ -72,6 +73,7 @@ jobs:
           name: Front-end scan & analyz 
           command: |
             cd frontend
+            npm i
             npm audit --audit-level=critical
             npm audit fix --audit-level=critical --force
 
