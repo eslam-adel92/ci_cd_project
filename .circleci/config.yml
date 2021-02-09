@@ -72,7 +72,7 @@ jobs:
           command: |
             npm audit --audit-level=critical
 
-  scan_brontend:
+  scan_backend:
     <<: *defaults
     steps:
       - checkout
