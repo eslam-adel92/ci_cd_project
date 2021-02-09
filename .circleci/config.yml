@@ -146,6 +146,6 @@ workflows:
             - "build_backend"
       - deploy-infrastructure:
           requires: [test_frontend, test_backend, scan_frontend, scan_backend]
-          filters:
-            branches:
-              only: [test-feature-branch]
+          # filters:
+          #   branches:
+          #     only: [test-feature-branch]
