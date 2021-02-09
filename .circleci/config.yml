@@ -47,7 +47,7 @@ jobs:
           name: Front-end test 
           command: |
             cd frontend
-            npm i
+#            npm i
             npm run test
 
   test_backend:
@@ -60,9 +60,33 @@ jobs:
           name: Back-end test 
           command: |
             cd backend
-            npm i
+#            npm i
             npm run test
 
+  scan_frontend:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [frontend-build]
+      - run:
+          name: Front-end test 
+          command: |
+#            npm i
+            npm audit --audit-level=critical
+#            npm audit fix --audit-level=critical --force
+  scan_brontend:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [backend-build]
+      - run:
+          name: Back-end test 
+          command: |
+#            npm i
+            npm audit --audit-level=critical
+  #          npm audit fix --audit-level=critical --force
 
 workflows:
   ci_pipeline_exercise:
@@ -75,3 +99,9 @@ workflows:
       - test_backend:
           requires:
             - "build_backend"
+      - scan_frontend:
+          requires:
+            - "build_frontend"
+      - scan_backend:
+          requires:
+            - "build_backend"            
