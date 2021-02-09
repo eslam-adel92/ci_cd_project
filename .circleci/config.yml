@@ -14,6 +14,7 @@ jobs:
       - run:
           name: Build front-end
           command: |
+            cd frontend
             npm i
             npm run build
       - save_cache:
@@ -29,6 +30,7 @@ jobs:
       - run:
           name: Back-end build
           command: |
+            cd backend
             npm i
             npm run build
       - save_cache:
@@ -44,6 +46,7 @@ jobs:
       - run:
           name: Front-end test 
           command: |
+            cd frontend
             npm i
             npm run test
 
@@ -56,6 +59,7 @@ jobs:
       - run:
           name: Back-end test 
           command: |
+            cd backend
             npm i
             npm run test
 
