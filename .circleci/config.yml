@@ -242,6 +242,7 @@ jobs:
       - run:
           name: install awscli v2 into nodejs, to be able to destroy environment.
           command: |
+            sudo apt-get update && sudo apt-get install -yy less
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip awscliv2.zip
             sudo ./aws/install
@@ -251,7 +252,7 @@ jobs:
       - run:
           name: Run migrations
           command: |
-            # cd backend
+            cd backend
             pwd
             npm run migrations > migration.output
       - persist_to_workspace:
