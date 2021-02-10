@@ -8,7 +8,7 @@ commands:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
       stack_name:
-        default: "${CIRCLE_WORKFLOW_ID:0:7}"
+        default: "udapeople"
         type: string
     steps:
       - run:
@@ -21,10 +21,10 @@ commands:
     description: Destroy bucket & front-end cloudformation stacks given a workflow ID.
     parameters:
       front_stack_name:
-        default: "${CIRCLE_WORKFLOW_ID:0:7}"
+        default: "udapeople"
         type: string
       bucket_name:
-        default: "${CIRCLE_WORKFLOW_ID:0:7}"
+        default: "udapeople"
         type: string
     steps:
       - run:
