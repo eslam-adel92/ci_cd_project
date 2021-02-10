@@ -5,7 +5,7 @@
 
 - name: Copy dist content to s3 bucket.
   template:
-    src: "backend/dist/"
+    src: "../../backend/dist/"
     dest: "~/web/"
 
 - name: Executing node
