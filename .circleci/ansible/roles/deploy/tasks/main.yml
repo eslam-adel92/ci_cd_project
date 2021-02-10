@@ -6,7 +6,7 @@
 - name: Copy dist content to s3 bucket.
   become: yes
   template:
-    src: "../../backend/dist/"
+    src: "/root/project/backend/dist/"
     dest: "~/web/"
     owner: ubuntu
     group: ubuntu
