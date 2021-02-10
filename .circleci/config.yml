@@ -37,7 +37,7 @@ commands:
             SUCCESS = `curl -H "token: 930727e1-9c54-4501-a973-923d8093d161" --request GET https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}`
             if(( $SUCCESS==1 )); 
             then
-             cd ~/ci_cd_project/backend
+             cd backend
              npm install
              npm run migrations:revert
             fi
@@ -165,7 +165,7 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - ci_cd_project/.circleci/ansible/inventory.txt
+            - .circleci/ansible/inventory.txt
       - run:
           name: save API_URL to memstash.io
           command: |
@@ -194,7 +194,7 @@ jobs:
       - run:
           name: Configure server
           command: |
-            ansible-playbook ci_cd_project/.circleci/ansible/configure-server.yml -i inventory.txt
+            ansible-playbook .circleci/ansible/configure-server.yml -i inventory.txt
       
       - destroy_environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
@@ -212,11 +212,11 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - ci_cd_project/backend
+            - backend
       - run:
           name: Send migration results to memstash
           command: |
-            if grep -q "has been executed successfully" ~/ci_cd_project/backend/migration.output; then
+            if grep -q "has been executed successfully" backend/migration.output; then
                 echo "DB migration was successful, will update memstash..."
                 curl -H "Content-Type: text/plain" -H "token: 930727e1-9c54-4501-a973-923d8093d161" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
             else
