@@ -196,7 +196,7 @@ jobs:
           at: ~/
       - run: apk add --update ansible curl unzip
       - run:
-          name: install awscli
+          name: install awscli v2, to be able to destroy environment.
           command: |
             GLIBC_VER=2.31-r0
             apk --no-cache add \
