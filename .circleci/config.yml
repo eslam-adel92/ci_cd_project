@@ -3,6 +3,45 @@ defaults: &defaults
   docker:
     - image: circleci/node:13.8.0
 
+commands:
+  destroy_environment:
+    description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
+    parameters:
+      workflow_id:
+        type: string
+      event:
+        type: string
+    steps:
+      - run:
+          name: Destroy environments <<parameters.workflow_id>>
+          when: <<parameters.event>>
+          command: |
+            aws cloudformation delete-stack --stack-name udapeople-backend-<<parameters.workflow_id>>
+            aws s3 rm s3://udapeople-<<parameters.workflow_id>> --recursive
+            aws cloudformation delete-stack --stack-name udapeople-frontend-<<parameters.workflow_id>>
+
+  revert-migrations:
+    description: Revert the last migration if successfully run in the current workflow.
+    parameters:
+      workflow_id:
+        type: string     
+    steps:
+      - restore_cache:
+          keys: [backend-build]
+      - attach_workspace:
+          at: ~/ci_cd_project/backend
+      - run:
+          name: Revert migrations
+          # Add when this will run
+          command: |
+            SUCCESS = `curl -H "token: 930727e1-9c54-4501-a973-923d8093d161" --request GET https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}`
+            if(( $SUCCESS==1 )); 
+            then
+             cd ~/ci_cd_project/backend
+             npm install
+             npm run migrations:revert
+            fi
+
 jobs:
   build_frontend:
     <<: *defaults
@@ -97,6 +136,7 @@ jobs:
       - image:  amazon/aws-cli
     steps:
       - checkout
+      - run: yum -y install tar gzip
       - run:
           name: Ensure back-end infrastructure exists
           command: |
@@ -105,11 +145,6 @@ jobs:
               --tags project=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7} \
               --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
-      - run: 
-          name: destroy_environment
-          command: |
-            aws cloudformation delete-stack --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
-        when: on_fail
 
       - run:
           name: Ensure front-end infrastructure exist
@@ -119,11 +154,6 @@ jobs:
               --tags project=udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7} \
               --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
-      - run: 
-          name: destroy_environment
-          command: |
-            aws cloudformation delete-stack --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
-        when: on_fail
 
       - run:
           name: Add back-end ip to ansible inventory
@@ -135,7 +165,7 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - ci_cd_project/.circleci/ansible/inventory.txt
+            - ~/ci_cd_project/.circleci/ansible/inventory.txt
       - run:
           name: save API_URL to memstash.io
           command: |
@@ -144,6 +174,11 @@ jobs:
               --filters "Name=tag:project,Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --output text`
             curl -H "Content-Type: text/plain" -H "token: 7ee37bb2-03a9-47fd-b8d4-e66d1b92c70d" --request PUT --data "http://${BACKEND_IP}:3030" https://api.memstash.io/values/API_URL
+
+      - destroy_environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+          event: on_fail
+
 
   configure_infrastructure:
     docker:
@@ -160,11 +195,10 @@ jobs:
           name: Configure server
           command: |
             ansible-playbook ci_cd_project/.circleci/ansible/configure-server.yml -i inventory.txt
-      - run: 
-          name: destroy_environment
-          command: |
-            aws cloudformation delete-stack --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
-        when: on_fail
+      
+      - destroy_environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+          event: on_fail
 
   run_migrations:
     docker:
@@ -174,13 +208,26 @@ jobs:
       - run:
           name: Run migrations
           command: |
-            npm run migrations
+            cd backend
+            npm run migrations > migration.output
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - ~/ci_cd_project/backend
       - run:
           name: Send migration results to memstash
           command: |
-            # Your code here
-            exit 1
-     # Here's where you will add some code to rollback on failure      
+            if grep -q "has been executed successfully" ~/ci_cd_project/backend/migration.output; then
+                echo "DB migration was successful, will update memstash..."
+                curl -H "Content-Type: text/plain" -H "token: 930727e1-9c54-4501-a973-923d8093d161" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
+            else
+                echo "DB migration failed, will update memstash..."
+                curl -H "Content-Type: text/plain" -H "token: 930727e1-9c54-4501-a973-923d8093d161" --request PUT --data "0" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
+            fi
+            echo "WorkflowID=${CIRCLE_WORKFLOW_ID:0:7}"
+      - destroy_environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+          event: on_fail      
 
 
 workflows:
@@ -205,3 +252,5 @@ workflows:
       - configure_infrastructure:
           requires:
             - "deploy_infrastructure"
+      - run_migrations:
+          requires: [configure_infrastructure]
