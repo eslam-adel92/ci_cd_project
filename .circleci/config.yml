@@ -3,21 +3,6 @@ defaults: &defaults
   docker:
     - image: circleci/node:13.8.0
 
-commands:
-  destroy_environment:
-    description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
-    parameters:
-      stack_name:
-        default: "udapeople"
-        type: string
-    steps:
-      - run:
-          name: Destroy environments
-          # when: on_fail
-          command: |
-            aws cloudformation delete-stack --stack-name <<parameters.stack_name>>
-
-
 jobs:
   build_frontend:
     <<: *defaults
@@ -120,9 +105,10 @@ jobs:
               --tags project=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7} \
               --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
-
-      - destroy_environment:
-          stack_name: "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
+      - run: 
+          name: destroy_environment
+          command: |
+            aws cloudformation delete-stack --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
         when: on_fail
 
       - run:
@@ -133,9 +119,10 @@ jobs:
               --tags project=udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7} \
               --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
-
-      - destroy_environment:
-          stack_name: "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
+      - run: 
+          name: destroy_environment
+          command: |
+            aws cloudformation delete-stack --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
         when: on_fail
 
       - run:
@@ -170,15 +157,9 @@ jobs:
           at: ~/
       - run: apk add --update ansible
       - run:
-          name: Install dependencies
-          command: |
-            # Your code here
-            exit 1
-      - run:
           name: Configure server
           command: |
-            # Your code here
-            exit 1
+            ansible-playbook ci_cd_project/.circleci/ansible/configure-server.yml -i inventory.txt
 
 workflows:
   ci_pipeline_exercise:
@@ -199,3 +180,6 @@ workflows:
             - "build_backend"
       - deploy_infrastructure:
           requires: [test_frontend, test_backend, scan_frontend, scan_backend]
+      - configure_infrastructure:
+          requires:
+            - "deploy_infrastructure"
