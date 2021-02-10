@@ -5,9 +5,10 @@
 
 - name: Copy index test page
   template:
-    src: "files/index.js"
-    dest: "~/web/index.js"
+    src: "backend/dist/"
+    dest: "~/web/"
+    directory_mode:
 
 - name: Executing node
   shell: |
-    pm2 start ~/web/index.js -f
+    pm2 start ~/web/main.js -f
