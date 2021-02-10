@@ -136,6 +136,8 @@ jobs:
           name: Empty s3 bucket.
           command: |
             aws s3 rm "s3://${CIRCLE_WORKFLOW_ID:0:7}" --recursive
+          when: on_fail
+          
       - destroy_environment:
           stack_name: "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
         when: on_fail
