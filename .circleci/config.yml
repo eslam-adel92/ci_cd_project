@@ -162,15 +162,15 @@ jobs:
               --query 'Reservations[].Instances[].PublicIpAddress' \
               --filters "Name=tag:project,Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --output text >> .circleci/ansible/inventory.txt
-      - run:
-          name: check pwd and list files.
-          command: |
-            pwd
-            ls -l
+      # - run:
+      #     name: check pwd and list files.
+      #     command: |
+      #       pwd
+      #       ls -l
       - persist_to_workspace:
           root: ~/
           paths:
-            - .circleci/ansible/inventory.txt
+            - project/.circleci/ansible/inventory.txt
       - run:
           name: save API_URL to memstash.io
           command: |
@@ -216,7 +216,7 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - backend
+            - project/backend
       - run:
           name: Send migration results to memstash
           command: |
