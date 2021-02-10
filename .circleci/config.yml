@@ -295,11 +295,14 @@ jobs:
       - run:
           name: Deploy frontend objects
           command: |
-            npm run build
             pwd
+            ls
+            cd frontend
             ls -l
             echo "=========="
             ls -l dist
+            npm run build
+
       - run:
           name: Copy dist files to s3.
           command: |
