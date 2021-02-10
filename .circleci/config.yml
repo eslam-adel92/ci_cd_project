@@ -295,18 +295,15 @@ jobs:
       - run:
           name: Deploy frontend objects
           command: |
-            pwd
-            ls
             cd frontend
             npm run build
-            ls -l
-            echo "=========="
-            ls -l dist
-            
+            ls -l            
       - run:
           name: Copy dist files to s3.
           command: |
-            aws s3 cp ./dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}/
+            pwd
+            cd frontend && pwd
+            aws s3 cp ./dist/* s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}/ --recursive
 
       - destroy_environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
