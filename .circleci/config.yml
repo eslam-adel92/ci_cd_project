@@ -24,7 +24,9 @@ commands:
     description: Revert the last migration if successfully run in the current workflow.
     parameters:
       workflow_id:
-        type: string     
+        type: string
+      event:
+        type: string   
     steps:
       - restore_cache:
           keys: [backend-build]
@@ -32,7 +34,7 @@ commands:
           at: ~/
       - run:
           name: Revert migrations
-          # Add when this will run
+          when: <<parameters.event>>
           command: |
             SUCCESS = `curl -H "token: 930727e1-9c54-4501-a973-923d8093d161" --request GET https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}`
             if(( $SUCCESS==1 )); 
@@ -308,6 +310,9 @@ jobs:
       - destroy_environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
           event: on_fail
+      - revert_migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+          event: on_fail
 
   deploy_backend:
     docker:
@@ -357,7 +362,10 @@ jobs:
       - destroy_environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
           event: on_fail
-
+      - revert_migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+          event: on_fail
+          
 workflows:
   ci_pipeline_exercise:
     jobs:
