@@ -264,7 +264,7 @@ jobs:
 
   deploy_frontend:
     docker:
-      - amazon/aws-cli
+      - image: amazon/aws-cli
     steps:
       - checkout
       - restore_cache:
