@@ -201,7 +201,6 @@ jobs:
           event: on_fail
 
   run_migrations:
-    docker:
     <<: *defaults
     steps:
       - checkout
