@@ -4,7 +4,7 @@ defaults: &defaults
     - image: circleci/node:13.8.0
 
 commands:
-  destroy_backend:
+  destroy_environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
       stack_name:
@@ -15,23 +15,6 @@ commands:
           name: Destroy environments
           # when: on_fail
           command: |
-            aws cloudformation delete-stack --stack-name <<parameters.stack_name>>
-
-  destroy_frontend:
-    description: Destroy bucket & front-end cloudformation stacks given a workflow ID.
-    parameters:
-      front_stack_name:
-        default: "udapeople"
-        type: string
-      bucket_name:
-        default: "udapeople"
-        type: string
-    steps:
-      - run:
-          name: Destroy environments
-          # when: on_fail
-          command: |
-            aws s3 rm "s3://<<parameters.bucket_name>>" --recursive
             aws cloudformation delete-stack --stack-name <<parameters.stack_name>>
 
 
@@ -138,9 +121,9 @@ jobs:
               --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
 
-      # - destroy_backend:
-      #     stack_name: "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
-      #   when: on_fail
+      - destroy_environment:
+          stack_name: "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
+        when: on_fail
 
       - run:
           name: Ensure front-end infrastructure exist
@@ -151,10 +134,9 @@ jobs:
               --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
 
-      # - destroy_frontend:
-      #     bucket_name: "${CIRCLE_WORKFLOW_ID:0:7}"
-      #     stack_name: "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
-      #   when: on_fail
+      - destroy_environment:
+          stack_name: "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
+        when: on_fail
 
       - run:
           name: Add back-end ip to ansible inventory
@@ -162,7 +144,7 @@ jobs:
             aws ec2 describe-instances \
               --query 'Reservations[].Instances[].PublicIpAddress' \
               --filters "Name=tag:project,Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-              --output text >> ansible/inventory.txt
+              --output text >> .circleci/ansible/inventory.txt
       - persist_to_workspace:
           root: ~/
           paths:
