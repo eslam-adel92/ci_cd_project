@@ -8,7 +8,6 @@
     - ansible_host_key_checking: false
     - ansible_stdout_callback: yaml
 
-- name: "Configure environment variables"
   environment:
     ENVIRONMENT: production
     TYPEORM_CONNECTION: postgres

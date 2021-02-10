@@ -262,31 +262,34 @@ jobs:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
           event: on_fail      
 
-  # deploy_frontend:
-  #   docker:
-  #     - amazon/aws-cli
-  #   steps:
-  #     - checkout
-  #     - run:
-  #         name: Install dependencies
-  #         command: |
-  #           cd frontend
-  #           npm i
-  #           npm run build
-  #     - run:
-  #         name: Get backend url
-  #         command: |
-  #           # your code here
-  #           export API_URL="http://${BACKEND_IP}:3030"
-  #           echo "${API_URL}"
-  #     - run:
-  #         name: Deploy frontend objects
-  #         command: |
-  #           # your code here
+  deploy_frontend:
+    docker:
+      - amazon/aws-cli
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [frontend-build]
+      # - run:
+      #     name: Install dependencies
+      #     command: |
 
-  #     - destroy_environment:
-  #         workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-  #         event: on_fail
+      - run:
+          name: Get backend url
+          command: |
+            export API_URL=`curl -H "token: 7ee37bb2-03a9-47fd-b8d4-e66d1b92c70d" --request GET https://api.memstash.io/values/API_URL`
+            echo "${API_URL}"
+      - run:
+          name: Deploy frontend objects
+          command: |
+            npm run build
+      - run:
+          name: Copy dist files to s3.
+          command: |
+            aws s3 cp ./dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}/
+
+      - destroy_environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+          event: on_fail
 
 workflows:
   ci_pipeline_exercise:
@@ -312,3 +315,5 @@ workflows:
             - "deploy_infrastructure"
       - run_migrations:
           requires: [configure_infrastructure]
+      - deploy_frontend:
+          requires: [run-migrations]
