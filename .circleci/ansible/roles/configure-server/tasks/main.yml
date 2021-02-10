@@ -35,13 +35,13 @@
     production: yes
     state: present
 
-- name: "Configure environment variables"
-  environment:
-    ENVIRONMENT: production
-    TYPEORM_CONNECTION: postgres
-    TYPEORM_ENTITIES: ./src/modules/domain/**/*.entity.ts
-    TYPEORM_HOST: udapeople-prod.ccbeszndgqbb.us-west-2.rds.amazonaws.com
-    TYPEORM_PORT: 5532
-    TYPEORM_USERNAME: postgres
-    TYPEORM_PASSWORD: xxKO11sASvI=
-    TYPEORM_DATABASE: udapeople-prod
+# - name: "Configure environment variables"
+#   environment:
+#     ENVIRONMENT: production
+#     TYPEORM_CONNECTION: postgres
+#     TYPEORM_ENTITIES: ./src/modules/domain/**/*.entity.ts
+#     TYPEORM_HOST: udapeople-prod.ccbeszndgqbb.us-west-2.rds.amazonaws.com
+#     TYPEORM_PORT: 5532
+#     TYPEORM_USERNAME: postgres
+#     TYPEORM_PASSWORD: xxKO11sASvI=
+#     TYPEORM_DATABASE: udapeople-prod
