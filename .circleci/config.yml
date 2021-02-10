@@ -238,12 +238,13 @@ jobs:
     <<: *defaults
     steps:
       - checkout
+      - run: whoami
       - run:
           name: install awscli v2 into nodejs, to be able to destroy environment.
           command: |
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip awscliv2.zip
-            ./aws/install
+            sudo ./aws/install
             aws --version
       - restore_cache:
           keys: [backend-build]
