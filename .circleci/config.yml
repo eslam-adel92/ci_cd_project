@@ -3,7 +3,20 @@ defaults: &defaults
   docker:
     - image: circleci/node:13.8.0
 
-# Here the start of the exercise from the course:
+commands:
+  destroy_environment:
+    description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
+    parameters:
+      stack_name:
+        default: "${CIRCLE_WORKFLOW_ID:0:7}"
+        type: string
+    steps:
+      - run:
+          name: Destroy environments
+          # when: on_fail
+          command: |
+            aws cloudformation delete-stack --stack-name <<parameters.stack_name>>
+
 jobs:
   build_frontend:
     <<: *defaults
@@ -93,7 +106,7 @@ jobs:
             npm audit fix --audit-level=critical --force
             npm audit fix --force            
 
-  deploy-infrastructure:
+  deploy_infrastructure:
     docker:
       - image:  amazon/aws-cli
     steps:
@@ -103,29 +116,70 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
-              --tags project=udapeople \
+              --tags project=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7} \
               --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
               # exit 1
+
+      - destroy_environment:
+          stack_name: "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
+        when: on_fail
+
       - run:
           name: Ensure front-end infrastructure exist
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/frontend.yml \
-              --tags project=udapeople \
+              --tags project=udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7} \
               --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
               # exit 1
+
+      - destroy_environment:
+          stack_name: "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
+        when: on_fail
+
       - run:
           name: Add back-end ip to ansible inventory
           command: |
-            # Your code here
-            exit 1
+            aws ec2 describe-instances \
+              --query 'Reservations[].Instances[].PublicIpAddress' \
+              --filters "Name=tag:project,Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --output text >> ansible/inventory.txt
       - persist_to_workspace:
           root: ~/
           paths:
-            - project/.circleci/ansible/inventory.txt
-      # Here's where you will add some code to rollback on failure
+            - ci_cd_project/.circleci/ansible/inventory.txt
+      - run:
+          name: save API_URL to memstash.io
+          command: |
+            BACKEND_IP=`aws ec2 describe-instances \
+              --query 'Reservations[].Instances[].PublicIpAddress' \
+              --filters "Name=tag:project,Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --output text`
+            curl -H "Content-Type: text/plain" -H "token: 7ee37bb2-03a9-47fd-b8d4-e66d1b92c70d" --request PUT --data "http://${BACKEND_IP}:3030" https://api.memstash.io/values/API_URL
+
+  configure-infrastructure:
+    docker:
+      - image: python:3.7-alpine3.11
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "5f:ac:d2:4b:2b:a0:e6:c9:1c:93:c2:bc:15:bf:e8:82"
+     - attach_workspace:
+          at: ~/
+      - run: apk add --update ansible
+      - run:
+          name: Install dependencies
+          command: |
+            # Your code here
+            exit 1
+      - run:
+          name: Configure server
+          command: |
+            # Your code here
+            exit 1
 
 workflows:
   ci_pipeline_exercise:
@@ -144,8 +198,5 @@ workflows:
       - scan_backend:
           requires:
             - "build_backend"
-      - deploy-infrastructure:
+      - deploy_infrastructure:
           requires: [test_frontend, test_backend, scan_frontend, scan_backend]
-          # filters:
-          #   branches:
-          #     only: [test-feature-branch]
