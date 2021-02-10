@@ -119,7 +119,6 @@ jobs:
               --tags project=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7} \
               --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
-              # exit 1
 
       - destroy_environment:
           stack_name: "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
@@ -133,8 +132,10 @@ jobs:
               --tags project=udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7} \
               --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
-              # exit 1
-
+      - run:
+          name: Empty s3 bucket.
+          command: |
+            aws s3 rm "s3://${CIRCLE_WORKFLOW_ID:0:7}" --recursive
       - destroy_environment:
           stack_name: "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
         when: on_fail
@@ -167,7 +168,7 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             - "5f:ac:d2:4b:2b:a0:e6:c9:1c:93:c2:bc:15:bf:e8:82"
-     - attach_workspace:
+      - attach_workspace:
           at: ~/
       - run: apk add --update ansible
       - run:
