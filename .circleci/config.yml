@@ -376,15 +376,31 @@ jobs:
           command: |
             yum install curl 
       - run:
-          name: Backend smoke test.
+          name: Get backend url
           command: |
             export BACKEND_URL=`curl -H "token: 7ee37bb2-03a9-47fd-b8d4-e66d1b92c70d" --request GET https://api.memstash.io/values/API_URL`
+      - run:
+          name: Backend smoke test.
+          command: |
             curl "$BACKEND_URL/api/status"
+            # export STATUS_CODE=`curl -IL -s -o /dev/null -w "%{http_code}" ${BACKEND_URL}`
+            #   if(( $STATUS_CODE==200 )); 
+            #   then
+            #     return 0
+            #   else
+            #     return 1
+            #   fi
       - run:
           name: Frontend smoke test.
           command: |
             export URL="http://udapeople-${CIRCLE_WORKFLOW_ID}.s3-website-us-west-2.amazonaws.com"
             curl -s ${URL} | grep -q "Welcome"
+            # if curl -s ${URL} | grep "Welcome"
+            # then
+            #   return 0
+            # else
+            #   return 1
+            # fi
       - destroy_environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
           event: on_fail
@@ -421,4 +437,6 @@ workflows:
       - deploy_backend:
           requires: [run_migrations]
       - smoke_test:
-          requires: [deploy_backend, deploy_frontend]
+          requires:
+            - "deploy_backend"
+            - "deploy_frontend"
