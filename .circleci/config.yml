@@ -138,9 +138,9 @@ jobs:
               --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
 
-      - destroy_backend:
-          stack_name: "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
-        when: on_fail
+      # - destroy_backend:
+      #     stack_name: "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
+      #   when: on_fail
 
       - run:
           name: Ensure front-end infrastructure exist
@@ -151,10 +151,10 @@ jobs:
               --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
 
-      - destroy_frontend:
-          bucket_name: "${CIRCLE_WORKFLOW_ID:0:7}"
-          stack_name: "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
-        when: on_fail
+      # - destroy_frontend:
+      #     bucket_name: "${CIRCLE_WORKFLOW_ID:0:7}"
+      #     stack_name: "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
+      #   when: on_fail
 
       - run:
           name: Add back-end ip to ansible inventory
