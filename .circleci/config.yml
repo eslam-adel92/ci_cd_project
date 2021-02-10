@@ -251,7 +251,7 @@ jobs:
       - run:
           name: Run migrations
           command: |
-            cd backend
+            # cd backend
             pwd
             npm run migrations > migration.output
       - persist_to_workspace:
@@ -293,6 +293,10 @@ jobs:
           name: Deploy frontend objects
           command: |
             npm run build
+            pwd
+            ls -l
+            echo "=========="
+            ls -l dist
       - run:
           name: Copy dist files to s3.
           command: |
