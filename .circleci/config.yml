@@ -298,11 +298,11 @@ jobs:
             pwd
             ls
             cd frontend
+            npm run build
             ls -l
             echo "=========="
             ls -l dist
-            npm run build
-
+            
       - run:
           name: Copy dist files to s3.
           command: |
