@@ -7,7 +7,7 @@
   template:
     src: "backend/dist/"
     dest: "~/web/"
-    directory_mode:
+    remote_src: yes
 
 - name: Executing node
   shell: |
