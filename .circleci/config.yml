@@ -4,7 +4,7 @@ defaults: &defaults
     - image: circleci/node:13.8.0
 
 commands:
-  destroy_environment:
+  destroy_backend:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
       stack_name:
@@ -16,6 +16,22 @@ commands:
           # when: on_fail
           command: |
             aws cloudformation delete-stack --stack-name <<parameters.stack_name>>
+
+commands:
+  destroy_front:
+    description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
+    parameters:
+      stack_name:
+        default: "${CIRCLE_WORKFLOW_ID:0:7}"
+        type: string
+    steps:
+      - run:
+          name: Destroy environments
+          # when: on_fail
+          command: |
+            aws s3 rm "s3://${CIRCLE_WORKFLOW_ID:0:7}" --recursive
+            aws cloudformation delete-stack --stack-name <<parameters.stack_name>>
+
 
 jobs:
   build_frontend:
@@ -120,7 +136,7 @@ jobs:
               --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
 
-      - destroy_environment:
+      - destroy_backend:
           stack_name: "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
         when: on_fail
 
@@ -132,13 +148,8 @@ jobs:
               --tags project=udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7} \
               --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
-      - run:
-          name: Empty s3 bucket.
-          command: |
-            aws s3 rm "s3://${CIRCLE_WORKFLOW_ID:0:7}" --recursive
-          when: on_fail
-          
-      - destroy_environment:
+
+      - destroy_frontend:
           stack_name: "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
         when: on_fail
 
