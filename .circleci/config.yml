@@ -232,31 +232,31 @@ jobs:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
           event: on_fail      
 
-  deploy_frontend:
-    docker:
-      - amazon/aws-cli
-    steps:
-      - checkout
-      - run:
-          name: Install dependencies
-          command: |
-            cd frontend
-            npm i
-            npm run build
-      - run:
-          name: Get backend url
-          command: |
-            # your code here
-            export API_URL="http://${BACKEND_IP}:3030"
-            echo "${API_URL}"
-      - run:
-          name: Deploy frontend objects
-          command: |
-            # your code here
+  # deploy_frontend:
+  #   docker:
+  #     - amazon/aws-cli
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Install dependencies
+  #         command: |
+  #           cd frontend
+  #           npm i
+  #           npm run build
+  #     - run:
+  #         name: Get backend url
+  #         command: |
+  #           # your code here
+  #           export API_URL="http://${BACKEND_IP}:3030"
+  #           echo "${API_URL}"
+  #     - run:
+  #         name: Deploy frontend objects
+  #         command: |
+  #           # your code here
 
-      - destroy_environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-          event: on_fail
+  #     - destroy_environment:
+  #         workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+  #         event: on_fail
 
 workflows:
   ci_pipeline_exercise:
