@@ -367,9 +367,9 @@ jobs:
           # no_output_timeout: 40m
           working_directory: .circleci/ansible
           command: |
-            pwd && ls -a ../../ && ls -a ../../backend/dist
+            # pwd && ls -a ../../ && ls -a ../../backend/dist
             # cd .circleci/ansible
-            ansible-playbook deploy-backend.yml -i inventory.txt -vv
+            ansible-playbook deploy-backend.yml -i inventory.txt
 
       - run:
           name: Deploy node exporter to server for prometheus monitoring.
