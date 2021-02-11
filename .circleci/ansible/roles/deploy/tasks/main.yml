@@ -12,8 +12,7 @@
     # owner: ubuntu
     # group: ubuntu
 
-- name: Executing node
-  shell: |
-    pm2 start -f main.js
+- name: start pm2 service.
+  command: pm2 start -f ./main.js
   args:
     chdir: ~/web
