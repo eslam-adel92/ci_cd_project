@@ -455,7 +455,7 @@ cleanup:
             fi
 
 workflows:
-  ci_pipeline_exercise:
+  ci_cd_project:
     jobs:
       - build_frontend
       - build_backend
