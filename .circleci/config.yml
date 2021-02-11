@@ -355,12 +355,19 @@ jobs:
                 && rm -rf /var/cache/apk/*
       - run:
           name: Deploy backend
-          no_output_timeout: 30m
+          no_output_timeout: 40m
           working_directory: .circleci/ansible
           command: |
-            pwd && ls -a ../../
+            pwd && ls -a ../../ && ls -a ../../backend/dist
             # cd .circleci/ansible
             ansible-playbook deploy-backend.yml -i inventory.txt
+
+      - run:
+          name: Deploy node exporter to server for prometheus monitoring.
+          working_directory: .circleci/ansible
+          command: |
+            ansible-playbook monitoring.yml -i inventory.txt
+
       - destroy_environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
           event: on_fail
