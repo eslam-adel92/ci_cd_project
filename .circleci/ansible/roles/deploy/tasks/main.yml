@@ -5,13 +5,13 @@
 
 - name: Copy dist content to s3 bucket.
   become: yes
-  src: "../../backend/dist/"
+  src: "../../backend/"
   dest: "~/web/"
   owner: ubuntu
   group: ubuntu
 
 - name: Executing node
   shell: |
-    pm2 start main.js -f
+    pm2 start -f main.js
   args:
-    chdir: ~/web
+    chdir: ~/web/dist

@@ -357,7 +357,7 @@ jobs:
           name: Deploy backend
           working_directory: .circleci/ansible
           command: |
-            pwd && ls -a
+            pwd && ls -a ../../
             # cd .circleci/ansible
             ansible-playbook deploy-backend.yml -i inventory.txt
       - destroy_environment:
