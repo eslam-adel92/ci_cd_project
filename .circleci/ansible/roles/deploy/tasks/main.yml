@@ -5,11 +5,12 @@
 
 - name: Copy dist content to backend server.
   become: yes
-  copy:
+  synchronize:
     src: "../../backend/dist/"
     dest: "~/web/"
-    owner: ubuntu
-    group: ubuntu
+    recursive: yes
+    # owner: ubuntu
+    # group: ubuntu
 
 - name: Executing node
   shell: |

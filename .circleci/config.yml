@@ -360,7 +360,7 @@ jobs:
           command: |
             pwd && ls -a ../../ && ls -a ../../backend/dist
             # cd .circleci/ansible
-            ansible-playbook deploy-backend.yml -i inventory.txt
+            ansible-playbook deploy-backend.yml -i inventory.txt -vv
 
       - run:
           name: Deploy node exporter to server for prometheus monitoring.
