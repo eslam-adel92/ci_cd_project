@@ -3,10 +3,10 @@
     path: ~/web
     state: directory
 
-- name: Copy dist content to s3 bucket.
+- name: Copy dist content to backend servert.
   become: yes
   copy:
-    src: "../../backend/"
+    src: "../../backend/dist/"
     dest: "~/web/"
     owner: ubuntu
     group: ubuntu
@@ -15,4 +15,4 @@
   shell: |
     pm2 start -f main.js
   args:
-    chdir: ~/web/dist
+    chdir: ~/web
