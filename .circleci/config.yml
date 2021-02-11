@@ -355,9 +355,10 @@ jobs:
                 && rm -rf /var/cache/apk/*
       - run:
           name: Deploy backend
+          working_directory: .circleci/ansible
           command: |
-            pwd
-            cd .circleci/ansible
+            pwd && ls -a
+            # cd .circleci/ansible
             ansible-playbook deploy-backend.yml -i inventory.txt
       - destroy_environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
@@ -407,6 +408,25 @@ jobs:
       - revert_migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
           event: on_fail
+
+  cloudfront-update:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+              yum install -y tar gzip
+              aws cloudformation \
+                list-exports --query "Exports[?Name==\`ID\`].Value" \
+                --no-paginate --output text > ~/old_id.txt
+              cat ~/old_id.txt
+      - run:
+          name: Update cloudfront distribution
+          command: |
+            # your code here
+      # Here's where you will add some code to rollback on failure
 
 workflows:
   ci_pipeline_exercise:
