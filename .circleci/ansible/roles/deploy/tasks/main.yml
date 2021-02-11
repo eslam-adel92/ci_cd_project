@@ -5,10 +5,11 @@
 
 - name: Copy dist content to s3 bucket.
   become: yes
-  src: "../../backend/"
-  dest: "~/web/"
-  owner: ubuntu
-  group: ubuntu
+  copy:
+    src: "../../backend/"
+    dest: "~/web/"
+    owner: ubuntu
+    group: ubuntu
 
 - name: Executing node
   shell: |
