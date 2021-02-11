@@ -494,12 +494,12 @@ workflows:
           requires: [run_migrations]
       - deploy_backend:
           requires: [run_migrations]
-      - smoke_test:
-          requires:
-            - "deploy_backend"
-            - "deploy_frontend"
-      - cloudfront_update:
-          requires:
-            - "smoke_test"
-      - cleanup:
-          requires: [cloudfront_update]
+      # - smoke_test:
+      #     requires:
+      #       - "deploy_backend"
+      #       - "deploy_frontend"
+      # - cloudfront_update:
+      #     requires:
+      #       - "smoke_test"
+      # - cleanup:
+      #     requires: [cloudfront_update]
