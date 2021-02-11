@@ -324,7 +324,7 @@ jobs:
             - "5f:ac:d2:4b:2b:a0:e6:c9:1c:93:c2:bc:15:bf:e8:82"
       - attach_workspace:
           at: ~/
-      - run: apk add --update ansible curl unzip
+      - run: apk add --update ansible curl unzip rsync
       - run:
           name: install awscli v2, to be able to destroy environment.
           command: |
