@@ -303,7 +303,6 @@ jobs:
       - run:
           name: Copy dist files to s3.
           command: |
-            pwd
             cd frontend && pwd
             aws s3 cp ./dist/ s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}/ --recursive --acl public-read
 
