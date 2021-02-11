@@ -500,6 +500,8 @@ workflows:
       #       - "deploy_frontend"
       - cloudfront_update:
           requires:
-            - "smoke_test"
+            - "deploy_backend"
+            - "deploy_frontend"
+            # - "smoke_test"
       - cleanup:
           requires: [cloudfront_update]
