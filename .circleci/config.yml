@@ -393,13 +393,10 @@ jobs:
           command: |
             yum install curl 
       - run:
-          name: Get backend url
-          command: |
-            export BACKEND_URL=`curl -H "token: 7ee37bb2-03a9-47fd-b8d4-e66d1b92c70d" --request GET https://api.memstash.io/values/API_URL`
-      - run:
           name: Backend smoke test.
           command: |
-            curl "$BACKEND_URL/api/status"
+            export BACKEND_URL=`curl -H "token: 7ee37bb2-03a9-47fd-b8d4-e66d1b92c70d" --request GET https://api.memstash.io/values/API_URL`
+            curl ${BACKEND_URL}/api/status
             # export STATUS_CODE=`curl -IL -s -o /dev/null -w "%{http_code}" ${BACKEND_URL}`
             #   if(( $STATUS_CODE==200 )); 
             #   then
