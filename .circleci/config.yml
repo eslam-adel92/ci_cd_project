@@ -355,6 +355,7 @@ jobs:
                 && rm -rf /var/cache/apk/*
       - run:
           name: Deploy backend
+          no_output_timeout: 30m
           working_directory: .circleci/ansible
           command: |
             pwd && ls -a ../../
