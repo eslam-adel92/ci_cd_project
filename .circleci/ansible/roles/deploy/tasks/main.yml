@@ -4,7 +4,7 @@
     state: directory
 
 - name: Copy dist content to backend server.
-  become: yes
+  # become: yes
   synchronize:
     src: "../../backend/dist/"
     dest: "~/web/"
