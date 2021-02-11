@@ -364,7 +364,7 @@ jobs:
             aws --version
       - run:
           name: Deploy backend
-          no_output_timeout: 40m
+          # no_output_timeout: 40m
           working_directory: .circleci/ansible
           command: |
             pwd && ls -a ../../ && ls -a ../../backend/dist
