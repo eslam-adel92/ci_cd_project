@@ -6,7 +6,7 @@
 - name: copy node_modules
   synchronize:
     src: "../../backend/node_modules"
-    dest: "~/web/"
+    dest: "~/web"
     recursive: yes
 
 - name: Copy dist content to backend server.
