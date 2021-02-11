@@ -432,6 +432,14 @@ jobs:
           command: |
               yum install -y tar gzip curl
       - run:
+          name: Store old WorkflowID in memstash for cleanup phase
+          working_directory: ./.circleci/files
+          command: |
+            WorkflowID=$(aws cloudformation \
+              list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+              --no-paginate --output text)
+            curl -H "Content-Type: text/plain" -H "token: 930727e1-9c54-4501-a973-923d8093d161" --request PUT --data "$WorkflowID" https://api.memstash.io/values/WorkflowID
+      - run:
           name: Update cloudfront distribution
           command: |
               aws cloudformation deploy \
@@ -451,9 +459,7 @@ jobs:
       - run:
           name: Get old stack workflow id
           command: |
-              export OldWorkflowID=$(aws cloudformation \
-                list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
-                --no-paginate --output text)
+              export OldWorkflowID=$(curl -H "token: 930727e1-9c54-4501-a973-923d8093d161" --request GET https://api.memstash.io/values/WorkflowID)
               export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
                 --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
 
@@ -465,6 +471,8 @@ jobs:
                 aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
                 aws s3 rm s3://udapeople-${OldWorkflowID} --recursive
                 aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
+              else
+                echo "no stacks has this ID $OldWorkflowID"
               fi
 
 workflows:
@@ -495,14 +503,12 @@ workflows:
           requires: [run_migrations]
       - deploy_backend:
           requires: [run_migrations]
-      # - smoke_test:
-      #     requires:
-      #       - "deploy_backend"
-      #       - "deploy_frontend"
-      - cloudfront_update:
+      - smoke_test:
           requires:
             - "deploy_backend"
             - "deploy_frontend"
-            # - "smoke_test"
+      - cloudfront_update:
+          requires:
+            - "smoke_test"
       - cleanup:
           requires: [cloudfront_update]
