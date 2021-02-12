@@ -16,7 +16,7 @@
 - name: "install python for Ansible."
   become: yes
   apt:
-    name: ["python", "python3", "rsync", "python-minimal"]
+    name: ["python", "python3", "rsync", "python2-minimal", "python3-minimal"]
     state: latest
     update_cache: yes
 
