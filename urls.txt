@@ -1,3 +1,9 @@
-https://github.com/eslam-adel92/ci_cd_project
+https://github.com/eslam-adel92/ci_cd_project [URL02]
 
-public URL for your S3 Bucket (aka, your front-end). [URL02]
+https://udapeople-fcfcaf8.s3-us-west-2.amazonaws.com/index.html [URL02]
+
+udapeople-fcfcaf8.s3.amazonaws.com/index.html [URL03]
+
+http://ec2-34-222-143-236.us-west-2.compute.amazonaws.com:3030/api/status [URL04]
+
+ec2-52-41-249-2.us-west-2.compute.amazonaws.com:9090 [URL05]
