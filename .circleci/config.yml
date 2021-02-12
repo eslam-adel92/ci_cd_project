@@ -457,7 +457,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Get old stack workflow id
+          name: Get old stack workflow id && Clean up old environment
           command: |
               export OldWorkflowID=`curl -H "token: 930727e1-9c54-4501-a973-923d8093d161" --request GET https://api.memstash.io/values/WorkflowID`
               export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
@@ -465,9 +465,9 @@ jobs:
               CurrentWorkflowID=${CIRCLE_WORKFLOW_ID:0:7}
               echo "old = $OldWorkflowID"
               echo "current = $CurrentWorkflowID"
-      - run:
-          name: Remove old stacks and files
-          command: |
+      # - run:
+      #     name: Remove old stacks and files
+      #     command: |
               if [[ $CurrentWorkflowID != $OldWorkflowID ]]
               then
                 echo "$OldWorkflowID!=$CurrentWorkflowID => will delete old version"
