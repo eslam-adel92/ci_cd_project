@@ -465,9 +465,6 @@ jobs:
               CurrentWorkflowID=${CIRCLE_WORKFLOW_ID:0:7}
               echo "old = $OldWorkflowID"
               echo "current = $CurrentWorkflowID"
-      # - run:
-      #     name: Remove old stacks and files
-      #     command: |
               if [[ $CurrentWorkflowID != $OldWorkflowID ]]
               then
                 echo "$OldWorkflowID!=$CurrentWorkflowID => will delete old version"
