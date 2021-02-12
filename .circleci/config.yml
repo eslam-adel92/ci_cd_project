@@ -494,6 +494,9 @@ workflows:
             - "build_backend"
       - deploy_infrastructure:
           requires: [test_frontend, test_backend, scan_frontend, scan_backend]
+          filters:
+            branches:
+              only: [main]
       - configure_infrastructure:
           requires:
             - "deploy_infrastructure"

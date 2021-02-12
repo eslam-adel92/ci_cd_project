@@ -2,7 +2,7 @@ https://github.com/eslam-adel92/ci_cd_project [URL02]
 
 https://udapeople-fcfcaf8.s3-us-west-2.amazonaws.com/index.html [URL02]
 
-udapeople-fcfcaf8.s3.amazonaws.com/index.html [URL03]
+d1as932ymlli77.cloudfront.net [URL03]
 
 http://ec2-34-222-143-236.us-west-2.compute.amazonaws.com:3030/api/status [URL04]
 
