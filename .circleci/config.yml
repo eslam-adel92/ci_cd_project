@@ -459,13 +459,14 @@ jobs:
       - run:
           name: Get old stack workflow id && Clean up old environment
           command: |
-              export OldWorkflowID=`curl -H "token: 930727e1-9c54-4501-a973-923d8093d161" --request GET https://api.memstash.io/values/WorkflowID`
-              export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
+              OldWorkflowID=`curl -H "token: 930727e1-9c54-4501-a973-923d8093d161" --request GET https://api.memstash.io/values/WorkflowID`
+              STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
                 --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
               CurrentWorkflowID=${CIRCLE_WORKFLOW_ID:0:7}
               echo "old = $OldWorkflowID"
               echo "current = $CurrentWorkflowID"
-              if [[ $CurrentWorkflowID != $OldWorkflowID ]]
+
+              if [[ ${CurrentWorkflowID} != ${OldWorkflowID} ]]
               then
                 echo "$OldWorkflowID!=$CurrentWorkflowID => will delete old version"
                 aws s3 rm s3://udapeople-$OldWorkflowID --recursive
